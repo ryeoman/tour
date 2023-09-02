@@ -1,32 +1,23 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
-	repository "github.com/ryeoman/tour/internal/repository/tour_plan"
-	"github.com/ryeoman/tour/internal/repository/tour_plan/sqlite"
+	tourplan "github.com/ryeoman/tour/cmd/app/tour_plan"
+	"github.com/ryeoman/tour/internal/infra/database/sqlite"
+	"github.com/ryeoman/tour/internal/infra/http/server"
 )
 
-const file string = "database/sqlite/tour.db"
-
 func main() {
-	db, err := sql.Open("sqlite3", file)
+	db, err := sqlite.NewDatabase("database/sqlite/tour.db")
 	if err != nil {
 		log.Println(err)
 	}
 	defer db.Close()
 
-	tourPlanSqliteReader, err := sqlite.NewTourPlanSqlite(db)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	tourPlanRepository := repository.NewTourPlanReader(tourPlanSqliteReader)
+	tourPlanApp, err := tourplan.NewApp(db.DB)
 
-	tourPlan, err := tourPlanRepository.GetByID(1)
-	if err != nil {
-		log.Println(tourPlan)
-	}
-	log.Println(tourPlan)
+	server := server.NewHTTPServer(tourPlanApp)
+	server.Start(":8000")
 }

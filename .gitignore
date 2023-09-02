@@ -1,1 +1,3 @@
-.vscode/launch.json
+.vscode/*
+vendor/*
+cmd/bin/*
