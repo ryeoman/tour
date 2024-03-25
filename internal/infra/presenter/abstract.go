@@ -11,4 +11,6 @@ const (
 	SuccessResult PresentType = iota
 	InternalErrorResult
 	BadRequestResult
+	UnauthorizedResult
+	ForbiddenResult
 )
